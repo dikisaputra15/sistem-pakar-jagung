@@ -5,7 +5,7 @@
 <p class="text-muted">Centang gejala-gejala yang ditemukan pada tanaman jagung Anda, lalu klik "Diagnosa Sekarang".</p>
 
 <div class="card p-4">
-    <form method="POST" action="{{ route('petani.diagnosa.store') }}">
+    <form method="POST" action="{{ route('petani.diagnosa.store') }}" id="formDiagnosa">
         @csrf
 
         @if($lahans->isNotEmpty())
@@ -38,3 +38,22 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('formDiagnosa').addEventListener('submit', function (e) {
+        const checkboxes = document.querySelectorAll('input[name="gejala[]"]');
+        const checked = document.querySelectorAll('input[name="gejala[]"]:checked');
+
+        if (checkboxes.length > 0 && checked.length === checkboxes.length) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Gejala tidak boleh diceklis semua',
+            });
+        }
+    });
+</script>
+@endpush
