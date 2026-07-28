@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Petani;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gejala;
+use App\Models\Penyakit;
 use App\Models\RiwayatDiagnosa;
 use App\Services\ForwardChainingService;
 use Illuminate\Http\Request;
@@ -16,13 +17,19 @@ class DiagnosaController extends Controller
         $gejalas = Gejala::orderBy('kode_gejala')->get();
         $lahans = Auth::user()->dataLahans;
 
-        return view('petani.diagnosa.create', compact('gejalas', 'lahans'));
+        // Ambil setiap penyakit beserta jumlah gejalanya
+        $penyakitGejala = Penyakit::withCount('gejalas')->orderBy('kode_penyakit')->get();
+        $maxGejala = $penyakitGejala->max('gejalas_count') ?: 1;
+
+        return view('petani.diagnosa.create', compact('gejalas', 'lahans', 'penyakitGejala', 'maxGejala'));
     }
 
     public function store(Request $request, ForwardChainingService $forwardChaining)
     {
+        $maxGejala = Penyakit::withCount('gejalas')->get()->max('gejalas_count') ?: 1;
+
         $request->validate([
-            'gejala' => 'required|array|min:1',
+            'gejala' => 'required|array|min:1|max:' . $maxGejala,
             'gejala.*' => 'exists:gejalas,id',
             'data_lahan_id' => 'nullable|exists:data_lahans,id',
         ]);
