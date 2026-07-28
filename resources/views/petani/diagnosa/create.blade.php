@@ -67,25 +67,7 @@
 @endsection
 
 @push('scripts')
-<<<<<<< HEAD
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.getElementById('formDiagnosa').addEventListener('submit', function (e) {
-        const checkboxes = document.querySelectorAll('input[name="gejala[]"]');
-        const checked = document.querySelectorAll('input[name="gejala[]"]:checked');
-
-        if (checkboxes.length > 0 && checked.length === checkboxes.length) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan',
-                text: 'Gejala tidak boleh diceklis semua',
-            });
-        }
-    });
-</script>
-@endpush
-=======
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const MAX_GEJALA = {{ $maxGejala }};
@@ -125,9 +107,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateState();
+
+    // Peringatan SweetAlert jika semua gejala dicentang
+    document.getElementById('formDiagnosa').addEventListener('submit', function (e) {
+        const total = document.querySelectorAll('.gejala-checkbox').length;
+        const checkedCount = document.querySelectorAll('.gejala-checkbox:checked').length;
+
+        if (total > 0 && checkedCount === total) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Gejala tidak boleh diceklis semua',
+            });
+        }
+    });
 });
 </script>
 @endpush
 
-
->>>>>>> 5534ac5 (add notif gejala)
